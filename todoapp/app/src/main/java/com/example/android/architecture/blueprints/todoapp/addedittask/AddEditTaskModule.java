@@ -14,33 +14,27 @@ import dagger.android.ContributesAndroidInjector;
  * This is a Dagger module. We use this to auto create the AdEditTaskSubComponent and bind
  * the {@link AddEditTaskPresenter} to the graph
  */
-@Module
-public abstract class AddEditTaskModule {
+@Module public abstract class AddEditTaskModule {
 
     // Rather than having the activity deal with getting the intent extra and passing it to the presenter
     // we will provide the taskId directly into the AddEditTaskActivitySubcomponent
     // which is what gets generated for us by Dagger.Android.
-    // We can then inject our TaskId and state into our Presenter without having pass through dependency from 
+    // We can then inject our TaskId and state into our Presenter without having pass through dependency from
     // the Activity. Each UI object gets the dependency it needs and nothing else.
-    @Provides
-    @ActivityScoped
-    @Nullable
-    static String provideTaskId(AddEditTaskActivity activity) {
+    @Provides @ActivityScoped @Nullable static String provideTaskId(AddEditTaskActivity activity) {
         return activity.getIntent().getStringExtra(AddEditTaskFragment.ARGUMENT_EDIT_TASK_ID);
     }
 
-    @Provides
-    @ActivityScoped
-    static boolean provideStatusDataMissing(AddEditTaskActivity activity) {
+    @Provides @ActivityScoped static boolean provideStatusDataMissing(AddEditTaskActivity activity) {
         return activity.isDataMissing();
     }
 
-    @FragmentScoped
-    @ContributesAndroidInjector
-    abstract AddEditTaskFragment addEditTaskFragment();
+    @FragmentScoped @ContributesAndroidInjector abstract AddEditTaskFragment addEditTaskFragment();
 
-    @ActivityScoped
-    @Binds
+    @FragmentScoped @ContributesAndroidInjector(modules = FragmentTestModule.class)
+    abstract FragmentTest fragmentTest();
+
+    @ActivityScoped @Binds
     abstract AddEditTaskContract.Presenter taskPresenter(AddEditTaskPresenter presenter);
 
     //NOTE:  IF you want to have something be only in the Fragment scope but not activity mark a
